@@ -41,7 +41,7 @@ const registerUser = async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 100,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
     const userResponse = {
@@ -61,4 +61,50 @@ const registerUser = async (req, res) => {
 
 }
 
-module.exports = { registerUser }
+const loginUser = async (req, res) => {
+
+    // validation
+    const { email, password } = req.body
+    if (!email || !password) {
+        return res.status(400).json({
+            success: false,
+            message: 'email and password are require'
+        })
+    }
+
+    // find user
+    const user = await User.findOne({ email }).select('+password')
+
+    if (!user) {
+        return res.status(401).json({
+            success: false,
+            message: 'Invalid email or password'
+        })
+    }
+
+    const isMatch = bcrypt.compare(password, user.password)
+
+    if (isMatch) {
+        return res.status(401).json({
+            success: false,
+            message: 'Invalid email or password'
+        })
+    }
+
+    // create jwt 
+    const token = jwt.sign(
+        { id: user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+    )
+
+    res.cookie('token', token, {
+        httpOnly: token,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 608100
+    })
+
+}
+
+module.exports = { registerUser, loginUser }
