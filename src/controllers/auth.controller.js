@@ -6,7 +6,7 @@ const registerUser = async (req, res) => {
 
     const { name, email, password } = req.body;
 
-    // valitate
+    // Input validation
     if (!name || !email || !password) {
         return res.status(400).json({
             success: false,
@@ -68,7 +68,7 @@ const loginUser = async (req, res) => {
     if (!email || !password) {
         return res.status(400).json({
             success: false,
-            message: 'email and password are require'
+            message: 'email and password are required'
         })
     }
 
