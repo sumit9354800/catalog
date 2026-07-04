@@ -119,4 +119,8 @@ const loginUser = async (req, res) => {
 
 }
 
+const logOut = ()=>{
+    
+}
+
 module.exports = { registerUser, loginUser }
